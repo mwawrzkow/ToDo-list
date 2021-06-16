@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:todolist/ToDoListHandler/ToDoList/ToDoCreator/ToDoCreator.dart';
-import 'ToDoList/ToDoItem.dart';
+import 'package:todolist/ToDoListHandler/ToDoList/ToDoItem.dart';
+import 'List.dart';
 
 class ListofThingsToDo extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-      ),
-      home: mainPage(title: 'ToDo List Manager'),
+    return Scaffold(
+      body: mainPage(title: 'ToDo List Manager'),
     );
   }
 }
@@ -26,10 +23,19 @@ class mainPage extends StatefulWidget {
 }
 
 class _ListOfThingsToDo extends State<mainPage> {
-  ToDoCollector collector = ToDoCollector();
-  void AddItem() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ToDoCreator()));
+  void setItem(int idx) {
+    setState(() {
+      toDoCollector.ToDoList.removeAt(idx);
+    });
+  }
+
+  void initState() {
+    super.initState();
+
+    for (var i = 0; i < 3; i++) {
+      toDoCollector.AddToDoThing(
+          ToDo('Test', 'Test 1 ', DateTime.now(), Colors.black));
+    }
   }
 
   @override
@@ -39,29 +45,93 @@ class _ListOfThingsToDo extends State<mainPage> {
       body: CustomScrollView(
         slivers: <Widget>[
           const SliverAppBar(
-            pinned: true,
-            expandedHeight: 250.0,
-            flexibleSpace: FlexibleSpaceBar(title: Text("ToDo List")),
-          ),
-          SliverList(
+              pinned: true,
+              expandedHeight: 600.0,
+              centerTitle: true,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  "ToDo List",
+                  style: TextStyle(color: Colors.black),
+                ),
+                background: Image(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                        'https://wallpaperaccess.com/full/2603548.jpg')),
+              )),
+          SliverFixedExtentList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 return Container(
                   alignment: Alignment.center,
-                  color: Colors.blue[200 * (index % 4)],
+                  color: ((index % 2) == 0)
+                      ? Colors.teal[200 + 100 * (index % 9)]
+                      : Colors.teal[400 + 100 * (index % 4)],
                   height: 100,
-                  child: Text('Item:' + collector.ToDoList[index].Short),
+                  child: Dismissible(
+                    onDismissed: (DismissDirection direction) {
+                      setItem(index);
+                    },
+                    key: new ObjectKey(toDoCollector.ToDoList[index]),
+                    background: new Container(
+                        color: const Color.fromRGBO(183, 28, 28, 0.8),
+                        child: const ListTile(
+                            leading: const Icon(Icons.delete,
+                                color: Colors.white, size: 36.0))),
+                    secondaryBackground: new Container(
+                        color: const Color.fromRGBO(183, 28, 28, 0.8),
+                        child: const ListTile(
+                            trailing: const Icon(Icons.delete,
+                                color: Colors.white, size: 36.0))),
+                    child: Column(
+                      children: <Widget>[
+                        Row(children: [
+                          IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+                          Spacer(
+                            flex: 5,
+                          ),
+                          Center(
+                              child: Text(
+                            toDoCollector.ToDoList[index].sname,
+                            style: TextStyle(fontSize: 20),
+                          )),
+                          Spacer(
+                            flex: 5,
+                          )
+                        ]),
+                        Row(
+                          children: [
+                            Spacer(
+                              flex: 10,
+                            ),
+                            Text(toDoCollector.ToDoList[index].date
+                                .toString()
+                                .split(' ')[0])
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
-              childCount: collector.ToDoList.length - 1,
+              childCount: toDoCollector.ToDoList.length,
             ),
+            itemExtent: 65,
           )
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: AddItem,
+        onPressed: () async {
+          final value = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ToDoCreator(),
+            ),
+          );
+          setState(() {});
+        },
         tooltip: 'Increment',
         child: Icon(Icons.add),
+        backgroundColor: Colors.teal[900],
       ),
     );
     // throw UnimplementedError();

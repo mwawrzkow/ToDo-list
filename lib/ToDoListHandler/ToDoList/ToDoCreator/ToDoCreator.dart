@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:todolist/ToDoListHandler/List.dart';
+import '../../ToDoListHandler.dart';
 import '../ToDoItem.dart';
 
 class ToDoCreator extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ToDoCreatorPage(title: 'ToDo List Manager'),
+    return Scaffold(
+      body: ToDoCreatorPage(title: 'ToDo List Manager'),
     );
   }
 }
@@ -30,7 +28,7 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
   }
 
   DateTime selectedDate = DateTime.now();
-
+  String sname = '', lname = '';
   Future<void> selectDate() async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -50,8 +48,15 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
           title: const Text('Add new reminder'),
           actions: <Widget>[
             Padding(
-              padding: EdgeInsets.all(10),
-              child: Icon(Icons.check),
+              padding: EdgeInsets.all(5),
+              child: IconButton(
+                icon: Icon(Icons.check),
+                onPressed: () {
+                  toDoCollector.AddToDoThing(
+                      ToDo(sname, lname, selectedDate, Colors.blue[200]));
+                  Navigator.pop(context);
+                },
+              ),
             )
           ],
         ),
@@ -64,6 +69,7 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
                 child: TextFormField(
                   autocorrect: true,
                   autofocus: true,
+                  onChanged: (value) => sname = value,
                   decoration: const InputDecoration(
                       labelText: 'Short Name',
                       hintText: 'Provide short name for your reminder'),
@@ -74,6 +80,7 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
                 padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                 child: TextFormField(
                   autocorrect: true,
+                  onChanged: (value) => lname = value,
                   decoration: const InputDecoration(
                       labelText: 'Description',
                       hintText: 'Provide description for your reminder'),
@@ -94,7 +101,7 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
                     )
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ));

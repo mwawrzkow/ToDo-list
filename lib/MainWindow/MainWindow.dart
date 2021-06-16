@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:todolist/ToDoListHandler/List.dart';
+import 'package:todolist/ToDoListHandler/ToDoList/ToDoCreator/ToDoCreator.dart';
 import '../ToDoListHandler/ToDoListHandler.dart';
 import '../ToDoListHandler/ToDoList/ToDoItem.dart';
 
 class MyApp extends StatelessWidget {
-  ToDoCollector collector = ToDoCollector();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -47,8 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text("ToDo List"),
               background: Image(
                 fit: BoxFit.fill,
-                image:
-                    NetworkImage('https://picsum.photos/seed/picsum/1280/720'),
+                image: NetworkImage(
+                    'https://wallpaperaccess.com/full/3636287.jpg'),
               ),
             ),
           ),
@@ -70,7 +71,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: AddToDo,
+        onPressed: () async {
+          final value = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ToDoCreator(),
+            ),
+          );
+        },
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
