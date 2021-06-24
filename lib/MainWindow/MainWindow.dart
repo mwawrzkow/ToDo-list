@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todolist/ToDoListHandler/List.dart';
 import 'package:todolist/ToDoListHandler/ToDoList/ToDoCreator/ToDoCreator.dart';
 import '../ToDoListHandler/ToDoListHandler.dart';
@@ -10,9 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: MyHomePage(title: 'ToDo List Manager'),
     );
   }
@@ -28,7 +27,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void ShowToDoList() {
+  Future<void> ShowToDoList() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    int? amount = sp.getInt("AMOUNT");
+    toDoCollector.ToDoList.clear();
+    for (int i = 0; i < amount!; i++) {
+      String? lName = sp.getString('lname' + i.toString());
+      String? sLName = sp.getString('sname' + i.toString());
+      String? dDate = sp.getString('date' + i.toString());
+      String? tmpcolor = sp.getString('color' + i.toString());
+      if (lName == null) break;
+      String cColor = tmpcolor as String;
+      toDoCollector.ToDoList.add(ToDo(sLName!, lName, DateTime.parse(dDate!),
+          Color(int.parse(cColor, radix: 16) + 0xFF000000)));
+    }
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => ListofThingsToDo()));
     setState(() {});

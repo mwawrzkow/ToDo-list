@@ -25,19 +25,20 @@ class mainPage extends StatefulWidget {
 class _ListOfThingsToDo extends State<mainPage> {
   void setItem(int idx) {
     setState(() {
-      toDoCollector.ToDoList.removeAt(idx);
+      toDoCollector.removeAt(idx);
     });
   }
 
   void initState() {
     super.initState();
 
-    for (var i = 0; i < 3; i++) {
-      toDoCollector.AddToDoThing(
-          ToDo('Test', 'Test 1 ', DateTime.now(), Colors.black));
-    }
+    // for (var i = 0; i < 3; i++) {
+    //   toDoCollector.AddToDoThing(
+    //       ToDo('Test', 'Test 1 ', DateTime.now(), Colors.black));
+    // }
   }
 
+  void showToDo(int index) {}
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -63,9 +64,7 @@ class _ListOfThingsToDo extends State<mainPage> {
               (BuildContext context, int index) {
                 return Container(
                   alignment: Alignment.center,
-                  color: ((index % 2) == 0)
-                      ? Colors.teal[200 + 100 * (index % 9)]
-                      : Colors.teal[400 + 100 * (index % 4)],
+                  color: toDoCollector.ToDoList[index].color,
                   height: 100,
                   child: Dismissible(
                     onDismissed: (DismissDirection direction) {
@@ -90,9 +89,11 @@ class _ListOfThingsToDo extends State<mainPage> {
                             flex: 5,
                           ),
                           Center(
-                              child: Text(
-                            toDoCollector.ToDoList[index].sname,
-                            style: TextStyle(fontSize: 20),
+                              child: TextButton(
+                            child: Text(toDoCollector.ToDoList[index].sname,
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.black)),
+                            onPressed: () => {showToDo(index)},
                           )),
                           Spacer(
                             flex: 5,

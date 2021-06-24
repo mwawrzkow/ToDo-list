@@ -1,4 +1,6 @@
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todolist/ToDoListHandler/List.dart';
 import '../../ToDoListHandler.dart';
 import '../ToDoItem.dart';
@@ -41,6 +43,7 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
       });
   }
 
+  Color screenColorPicker = Colors.white;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,9 +54,9 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
               padding: EdgeInsets.all(5),
               child: IconButton(
                 icon: Icon(Icons.check),
-                onPressed: () {
+                onPressed: () async {
                   toDoCollector.AddToDoThing(
-                      ToDo(sname, lname, selectedDate, Colors.blue[200]));
+                      ToDo(sname, lname, selectedDate, screenColorPicker));
                   Navigator.pop(context);
                 },
               ),
@@ -102,6 +105,27 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
                   ],
                 ),
               ),
+              Card(
+                elevation: 2,
+                child: ColorPicker(
+                  // Use the screenPickerColor as start color.
+                  color: screenColorPicker,
+                  // Update the screenPickerColor using the callback.
+                  onColorChanged: (Color color) =>
+                      setState(() => screenColorPicker = color),
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  heading: Text(
+                    'Select color',
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                  subheading: Text(
+                    'Select color shade',
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                ),
+              )
             ],
           ),
         ));
