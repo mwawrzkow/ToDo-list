@@ -38,7 +38,46 @@ class _ListOfThingsToDo extends State<mainPage> {
     // }
   }
 
-  void showToDo(int index) {}
+  void showToDo(int index) {
+    showDialog(
+        context: context,
+        builder: (_) => new AlertDialog(
+              title: new Text(toDoCollector.ToDoList[index].sname),
+              content: Column(
+                children: [
+                  Center(child: Text(toDoCollector.ToDoList[index].lname)),
+                  Center(
+                      child: Text("Due date: " +
+                          toDoCollector.ToDoList[index].date
+                              .toString()
+                              .split(' ')[0])),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ));
+  }
+
+// bool shouldLoadDefaultValues = false;
+// int indexOfEditedComponent = -1;
+  Future<void> onEdit(int index) async {
+    shouldLoadDefaultValues = true;
+    indexOfEditedComponent = index;
+    final value = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ToDoCreator(),
+      ),
+    );
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -84,7 +123,11 @@ class _ListOfThingsToDo extends State<mainPage> {
                     child: Column(
                       children: <Widget>[
                         Row(children: [
-                          IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+                          IconButton(
+                              onPressed: () {
+                                onEdit(index);
+                              },
+                              icon: Icon(Icons.edit)),
                           Spacer(
                             flex: 5,
                           ),
@@ -122,6 +165,7 @@ class _ListOfThingsToDo extends State<mainPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          shouldLoadDefaultValues = false;
           final value = await Navigator.push(
             context,
             MaterialPageRoute(

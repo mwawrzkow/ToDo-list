@@ -5,6 +5,9 @@ import 'package:todolist/ToDoListHandler/List.dart';
 import '../../ToDoListHandler.dart';
 import '../ToDoItem.dart';
 
+bool shouldLoadDefaultValues = false;
+int indexOfEditedComponent = -1;
+
 class ToDoCreator extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -31,6 +34,27 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
 
   DateTime selectedDate = DateTime.now();
   String sname = '', lname = '';
+  late TextEditingController _sname, _lname;
+  Color screenColorPicker = Colors.white;
+
+  @override
+  void initState() {
+    super.initState();
+    if (shouldLoadDefaultValues) {
+      _sname = new TextEditingController(
+          text: toDoCollector.ToDoList[indexOfEditedComponent].sname);
+      _lname = new TextEditingController(
+          text: toDoCollector.ToDoList[indexOfEditedComponent].lname);
+      sname = toDoCollector.ToDoList[indexOfEditedComponent].sname;
+      lname = toDoCollector.ToDoList[indexOfEditedComponent].lname;
+      selectedDate = toDoCollector.ToDoList[indexOfEditedComponent].date;
+      screenColorPicker = toDoCollector.ToDoList[indexOfEditedComponent].color!;
+    } else {
+      _sname = new TextEditingController();
+      _lname = new TextEditingController();
+    }
+  }
+
   Future<void> selectDate() async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -43,7 +67,6 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
       });
   }
 
-  Color screenColorPicker = Colors.white;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,8 +78,14 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
               child: IconButton(
                 icon: Icon(Icons.check),
                 onPressed: () async {
-                  toDoCollector.AddToDoThing(
-                      ToDo(sname, lname, selectedDate, screenColorPicker));
+                  if (!shouldLoadDefaultValues)
+                    toDoCollector.AddToDoThing(
+                        ToDo(sname, lname, selectedDate, screenColorPicker));
+                  else {
+                    toDoCollector.ToDoList[indexOfEditedComponent] =
+                        ToDo(sname, lname, selectedDate, screenColorPicker);
+                    toDoCollector.updateGlobals();
+                  }
                   Navigator.pop(context);
                 },
               ),
@@ -73,6 +102,7 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
                   autocorrect: true,
                   autofocus: true,
                   onChanged: (value) => sname = value,
+                  controller: _sname,
                   decoration: const InputDecoration(
                       labelText: 'Short Name',
                       hintText: 'Provide short name for your reminder'),
@@ -83,6 +113,7 @@ class _ToDoCreatorPage extends State<ToDoCreatorPage> {
                 padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                 child: TextFormField(
                   autocorrect: true,
+                  controller: _lname,
                   onChanged: (value) => lname = value,
                   decoration: const InputDecoration(
                       labelText: 'Description',
